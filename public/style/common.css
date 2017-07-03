@@ -1,7 +1,7 @@
 
 body {
   background-image: url('/public/img/bg.jpg');
-  background-color: #eee;
+  background-color: #000;
   padding-top: 3%;
 }
 
@@ -12,8 +12,10 @@ table {
 .container {
   background-color: #fff;
   padding: 10px;
+  border-radius: 5px;
 }
 
-tr.proto {
-  background-color: #eee;
+td.id {
+  font-size: 12px;
+  color: #666;
 }

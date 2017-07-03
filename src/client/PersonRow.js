@@ -5,10 +5,16 @@ export default class PersonRow extends Component {
 
   constructor(props) {
     super(props)
+    const firstname = props.firstname || ''
+    const surname = props.surname || ''
     this.state = {
-      id: props.id,
-      firstname: props.firstname,
-      surname: props.surname
+      id: props.id || '',
+      initialValues: {
+        firstname,
+        surname
+      },
+      firstname: firstname,
+      surname: surname
     }
   }
 
@@ -28,16 +34,30 @@ export default class PersonRow extends Component {
       return this.refs.surname.focus()
     }
     fetch('/', {
-      method: 'POST',
+      method: this.state.id ? 'PATCH' : 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ firstname, surname })
+      body: JSON.stringify({
+        id: this.state.id,
+        firstname,
+        surname
+      })
     })
     .then(res => res.json())
     .then(person => {
-      this.props.onPersonAdded(person)
-      this.setState({ firstname: '', surname: '' })
+      if (! this.state.id) { // creation
+        this.props.onPersonAdded(person)
+        this.setState({ firstname: '', surname: '' })
+      } else { // update
+        console.log('update')
+        this.setState({
+          initialValues: {
+            firstname,
+            surname
+          }
+        })
+      }
     })
     .catch(console.error.bind(console))
   }
@@ -48,33 +68,40 @@ export default class PersonRow extends Component {
       onChange={({ target }) => this.setState({ [name]: target.value })}/>
   }
 
+  hasChanged() {
+    const { initialValues, firstname, surname } = this.state
+    return initialValues.firstname !== firstname
+      || initialValues.surname !== surname
+  }
+
   renderBtns() {
     const { id } = this.state
+    const buttons = []
     if (id) {
-      return (
-        <button className='btn btn-danger'
+      buttons.push(
+        <button key='remove' className='btn btn-danger'
           onClick={this.props.onPersonRemoved.bind(this)}>
             <i className='fa fa-trash'></i>
         </button>
       )
     }
-    return (
+    buttons.push(
       <button key='save' className='btn btn-success'
+        disabled={id && ! this.hasChanged()}
         onClick={this.handleSave.bind(this)}>
           <i className='fa fa-save'></i>
       </button>
     )
+    return buttons
   }
 
   render() {
     const { id } = this.state
-    const classNames = []
-    if (! id) {
-      classNames.push('proto')
-    }
     return (
-      <tr className={classNames.join(' ')}>
-        <td>{id}</td>
+      <tr>
+        <td className='id'>
+          {id ? id : <strong>Create a new person:</strong>}
+        </td>
         <td>{this.createField('firstname')}</td>
         <td>{this.createField('surname')}</td>
         <td>{this.renderBtns()}</td>

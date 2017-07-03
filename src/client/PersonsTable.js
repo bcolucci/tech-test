@@ -29,6 +29,9 @@ export default class PersonsTable extends Component {
   }
 
   onPersonRemoved(person) {
+    if (! window.confirm('Are you sure?')) {
+      return
+    }
     fetch('/'+person.id, { method: 'DELETE' }).then(() => {
       const persons = this.state.persons.filter(p => p.id !== person.id)
       this.setState({ persons })
@@ -45,7 +48,7 @@ export default class PersonsTable extends Component {
           <table>
             <thead>
               <tr>
-                <th>#</th>
+                <th>#UUID</th>
                 <th>First name</th>
                 <th>Last name</th>
               </tr>

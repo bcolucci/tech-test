@@ -23254,6 +23254,9 @@ var PersonsTable = function (_Component) {
     value: function onPersonRemoved(person) {
       var _this3 = this;
 
+      if (!window.confirm('Are you sure?')) {
+        return;
+      }
       fetch('/' + person.id, { method: 'DELETE' }).then(function () {
         var persons = _this3.state.persons.filter(function (p) {
           return p.id !== person.id;
@@ -23287,7 +23290,7 @@ var PersonsTable = function (_Component) {
                 _react2.default.createElement(
                   'th',
                   null,
-                  '#'
+                  '#UUID'
                 ),
                 _react2.default.createElement(
                   'th',
@@ -24285,10 +24288,16 @@ var PersonRow = function (_Component) {
 
     var _this = (0, _possibleConstructorReturn3.default)(this, (PersonRow.__proto__ || Object.getPrototypeOf(PersonRow)).call(this, props));
 
+    var firstname = props.firstname || '';
+    var surname = props.surname || '';
     _this.state = {
-      id: props.id,
-      firstname: props.firstname,
-      surname: props.surname
+      id: props.id || '',
+      initialValues: {
+        firstname: firstname,
+        surname: surname
+      },
+      firstname: firstname,
+      surname: surname
     };
     return _this;
   }
@@ -24314,16 +24323,32 @@ var PersonRow = function (_Component) {
         return this.refs.surname.focus();
       }
       fetch('/', {
-        method: 'POST',
+        method: this.state.id ? 'PATCH' : 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ firstname: firstname, surname: surname })
+        body: JSON.stringify({
+          id: this.state.id,
+          firstname: firstname,
+          surname: surname
+        })
       }).then(function (res) {
         return res.json();
       }).then(function (person) {
-        _this2.props.onPersonAdded(person);
-        _this2.setState({ firstname: '', surname: '' });
+        if (!_this2.state.id) {
+          // creation
+          _this2.props.onPersonAdded(person);
+          _this2.setState({ firstname: '', surname: '' });
+        } else {
+          // update
+          console.log('update');
+          _this2.setState({
+            initialValues: {
+              firstname: firstname,
+              surname: surname
+            }
+          });
+        }
       }).catch(console.error.bind(console));
     }
   }, {
@@ -24339,41 +24364,54 @@ var PersonRow = function (_Component) {
         } });
     }
   }, {
+    key: 'hasChanged',
+    value: function hasChanged() {
+      var _state = this.state,
+          initialValues = _state.initialValues,
+          firstname = _state.firstname,
+          surname = _state.surname;
+
+      return initialValues.firstname !== firstname || initialValues.surname !== surname;
+    }
+  }, {
     key: 'renderBtns',
     value: function renderBtns() {
       var id = this.state.id;
 
+      var buttons = [];
       if (id) {
-        return _react2.default.createElement(
+        buttons.push(_react2.default.createElement(
           'button',
-          { className: 'btn btn-danger',
+          { key: 'remove', className: 'btn btn-danger',
             onClick: this.props.onPersonRemoved.bind(this) },
           _react2.default.createElement('i', { className: 'fa fa-trash' })
-        );
+        ));
       }
-      return _react2.default.createElement(
+      buttons.push(_react2.default.createElement(
         'button',
         { key: 'save', className: 'btn btn-success',
+          disabled: id && !this.hasChanged(),
           onClick: this.handleSave.bind(this) },
         _react2.default.createElement('i', { className: 'fa fa-save' })
-      );
+      ));
+      return buttons;
     }
   }, {
     key: 'render',
     value: function render() {
       var id = this.state.id;
 
-      var classNames = [];
-      if (!id) {
-        classNames.push('proto');
-      }
       return _react2.default.createElement(
         'tr',
-        { className: classNames.join(' ') },
+        null,
         _react2.default.createElement(
           'td',
-          null,
-          id
+          { className: 'id' },
+          id ? id : _react2.default.createElement(
+            'strong',
+            null,
+            'Create a new person:'
+          )
         ),
         _react2.default.createElement(
           'td',

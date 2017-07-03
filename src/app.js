@@ -29,8 +29,9 @@ const validatePerson = (req, res, next) => {
   if (! req.body) {
     return next('No data found.')
   }
-  const { firstname, surname } = req.body
-  req.appCtx.person = { firstname, surname }
+  const { id, firstname, surname } = req.body
+  req.appCtx.person = { id, firstname, surname }
+  //TODO use validator
   next()
 }
 
@@ -40,6 +41,13 @@ app.post('/', validatePerson, (req, res) => {
   store.dispatch(module.Actions.save())
   const persons = store.getState()
   res.json(persons[persons.length - 1])
+})
+
+app.patch('/', validatePerson, (req, res) => {
+  const person = req.appCtx.person
+  store.dispatch(module.Actions.update(person))
+  store.dispatch(module.Actions.save())
+  res.json(person)
 })
 
 app.delete('/:id', (req, res) => {
