@@ -1,1 +1,2 @@
-console.log('first commit.')
+require('babel-core/register')
+require('./src')
