@@ -1,4 +1,9 @@
 
 body {
   background-color: #eee;
+  padding-top: 3%;
+}
+
+table {
+  width: 100%;
 }
