@@ -23234,8 +23234,8 @@ var PersonsTable = function (_Component) {
     value: function renderRows() {
       var _this2 = this;
 
-      var persons = this.state.persons.map(function (person, idx) {
-        return _react2.default.createElement(_PersonRow2.default, (0, _extends3.default)({ key: 'person-' + idx }, person, {
+      var persons = this.state.persons.map(function (person) {
+        return _react2.default.createElement(_PersonRow2.default, (0, _extends3.default)({ key: person.id }, person, {
           onPersonRemoved: function onPersonRemoved() {
             return _this2.onPersonRemoved(person);
           } }));
@@ -23246,7 +23246,7 @@ var PersonsTable = function (_Component) {
   }, {
     key: 'onPersonAdded',
     value: function onPersonAdded(person) {
-      var persons = [person].concat((0, _toConsumableArray3.default)(this.state.persons));
+      var persons = [].concat((0, _toConsumableArray3.default)(this.state.persons), [person]);
       this.setState({ persons: persons });
     }
   }, {

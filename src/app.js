@@ -38,7 +38,8 @@ app.post('/', validatePerson, (req, res) => {
   const person = req.appCtx.person
   store.dispatch(module.Actions.add(person))
   store.dispatch(module.Actions.save())
-  res.json(person)
+  const persons = store.getState()
+  res.json(persons[persons.length - 1])
 })
 
 app.delete('/:id', (req, res) => {

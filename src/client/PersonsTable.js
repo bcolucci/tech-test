@@ -12,8 +12,8 @@ export default class PersonsTable extends Component {
   }
 
   renderRows() {
-    const persons = this.state.persons.map((person, idx) => {
-      return <PersonRow key={'person-'+idx} { ...person }
+    const persons = this.state.persons.map(person => {
+      return <PersonRow key={person.id} { ...person }
         onPersonRemoved={() => this.onPersonRemoved(person)}/>
     })
     return [
@@ -24,7 +24,7 @@ export default class PersonsTable extends Component {
   }
 
   onPersonAdded(person) {
-    const persons = [ person, ...this.state.persons ]
+    const persons = [ ...this.state.persons, person ]
     this.setState({ persons })
   }
 
