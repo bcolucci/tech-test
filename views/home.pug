@@ -1,9 +1,9 @@
 extends layout
 
 block contents
-  #app-container
+  #app-container.container
 
 block scripts
   script.
     const state = !{state}
-  script(src='/public/js/App.js', type="text/babel")
+  script(src='/public/js/persons.js')

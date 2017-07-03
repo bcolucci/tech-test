@@ -1,6 +1,7 @@
 {
   "presets": [
-    "latest"
+    "latest",
+    "react"
   ],
   "plugins": [
     [ "transform-runtime", {
