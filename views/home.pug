@@ -1,8 +1,9 @@
 extends layout
 
 block contents
-  #form-container
+  #app-container
 
 block scripts
-  script(src='/public/js/PersonRow.js', type="text/babel")
-  script(src='/public/js/Form.js', type="text/babel")
+  script.
+    const state = !{state}
+  script(src='/public/js/App.js', type="text/babel")
