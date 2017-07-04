@@ -1,10 +1,9 @@
 
+import config from 'config'
 import uuid from 'uuid'
+import fs from 'fs'
 import { join } from 'path'
-import { existsSync, readFileSync, writeFileSync } from 'fs'
 import * as Actions from './actions'
-
-const file = join(__dirname, '..', '..', 'persons.json')
 
 export default (state = [], action) => {
   if (action === undefined) {
@@ -12,9 +11,13 @@ export default (state = [], action) => {
   }
   switch (action.type) {
     case Actions.LOAD_ACTION:
-      return existsSync(file) ? JSON.parse(readFileSync(file)) : state
+      if (fs.existsSync(config.stateFile)) {
+        return JSON.parse(fs.readFileSync(config.stateFile))
+      }
+      return state
     case Actions.SAVE_ACTION:
-      writeFileSync(file, JSON.stringify(state, null, 2))
+      const srzState = JSON.stringify(state, null, 2)
+      fs.writeFileSync(config.stateFile, srzState)
       break
     case Actions.ADD_ACTION:
       const id = uuid.v1()

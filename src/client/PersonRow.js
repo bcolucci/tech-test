@@ -1,5 +1,6 @@
 
 import React, { Component } from 'react'
+import validate from '../person/validate'
 
 export default class PersonRow extends Component {
 
@@ -14,7 +15,8 @@ export default class PersonRow extends Component {
         surname
       },
       firstname: firstname,
-      surname: surname
+      surname: surname,
+      error: false
     }
   }
 
@@ -46,11 +48,10 @@ export default class PersonRow extends Component {
     })
     .then(res => res.json())
     .then(person => {
-      if (! this.state.id) { // creation
+      if (! this.state.id) {
         this.props.onPersonAdded(person)
         this.setState({ firstname: '', surname: '' })
-      } else { // update
-        console.log('update')
+      } else {
         this.setState({
           initialValues: {
             firstname,
@@ -58,14 +59,18 @@ export default class PersonRow extends Component {
           }
         })
       }
-    })
-    .catch(console.error.bind(console))
+    }).catch(console.error.bind(console))
+  }
+
+  handleOnChange(name, value) {
+    const error = ! validate(value)
+    this.setState({ [name]: value, error })
   }
 
   createField(name) {
     return <input type='text' ref={name} className='form-control'
       placeholder={name+'...'} value={this.state[name]}
-      onChange={({ target }) => this.setState({ [name]: target.value })}/>
+      onChange={({ target }) => this.handleOnChange(name, target.value)}/>
   }
 
   hasChanged() {
@@ -75,7 +80,7 @@ export default class PersonRow extends Component {
   }
 
   renderBtns() {
-    const { id } = this.state
+    const { id, error } = this.state
     const buttons = []
     if (id) {
       buttons.push(
@@ -87,7 +92,7 @@ export default class PersonRow extends Component {
     }
     buttons.push(
       <button key='save' className='btn btn-success'
-        disabled={id && ! this.hasChanged()}
+        disabled={id && (error || ! this.hasChanged())}
         onClick={this.handleSave.bind(this)}>
           <i className='fa fa-save'></i>
       </button>
@@ -95,10 +100,20 @@ export default class PersonRow extends Component {
     return buttons
   }
 
+  stateIcon() {
+    if (! this.state.id) {
+      return null
+    }
+    const icon = this.state.error ? 'warning' :
+      (this.hasChanged() ? 'square-o' : 'check-square-o')
+    return <i className={`fa fa-${icon}`}></i>
+  }
+
   render() {
     const { id } = this.state
     return (
       <tr>
+        <td>{this.stateIcon()}</td>
         <td className='id'>
           {id ? id : <strong>Create a new person:</strong>}
         </td>

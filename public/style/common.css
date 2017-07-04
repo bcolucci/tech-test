@@ -11,11 +11,22 @@ table {
 
 .container {
   background-color: #fff;
-  padding: 10px;
+  padding: 8px;
   border-radius: 5px;
 }
 
 td.id {
   font-size: 12px;
   color: #666;
+}
+
+.btn {
+  cursor: pointer;
+}
+
+footer {
+  color: #ccc;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 3px;
 }

@@ -1,12 +1,13 @@
 
 import test from 'ava'
-import { createStore } from 'redux'
 import uuid from 'uuid'
 import sinon from 'sinon'
-import Person from '../src/person'
+import { createStore } from 'redux'
+import reducer from '../src/person/reducer'
+import { add, remove, update } from '../src/person/actions'
 
 const createStoreProxy = () => {
-  const store = createStore(Person.reducer)
+  const store = createStore(reducer)
   store.subscribe(() => console.log('state changed', store.getState()))
   return store
 }
@@ -21,7 +22,7 @@ test.afterEach(() => uuid.v1.restore())
 
 test('add person', t => {
   const store = createStoreProxy()
-  store.dispatch(Person.Actions.add({ firstname: 'Brice', surname: 'Colucci' }))
+  store.dispatch(add({ firstname: 'Brice', surname: 'Colucci' }))
   t.deepEqual(store.getState(), [
     { id: 'fake-uuid1', firstname: 'Brice', surname: 'Colucci' }
   ])
@@ -29,13 +30,13 @@ test('add person', t => {
 
 test('remove person', t => {
   const store = createStoreProxy()
-  store.dispatch(Person.Actions.add({ firstname: 'Brice', surname: 'Colucci' }))
-  store.dispatch(Person.Actions.add({ firstname: 'Caroline', surname: 'Lorent' }))
+  store.dispatch(add({ firstname: 'Brice', surname: 'Colucci' }))
+  store.dispatch(add({ firstname: 'Caroline', surname: 'Lorent' }))
   t.deepEqual(store.getState(), [
     { id: 'fake-uuid1', firstname: 'Brice', surname: 'Colucci' },
     { id: 'fake-uuid2', firstname: 'Caroline', surname: 'Lorent' }
   ])
-  store.dispatch(Person.Actions.remove({ id: 'fake-uuid1' }))
+  store.dispatch(remove({ id: 'fake-uuid1' }))
   t.deepEqual(store.getState(), [
     { id: 'fake-uuid2', firstname: 'Caroline', surname: 'Lorent' }
   ])
@@ -43,13 +44,13 @@ test('remove person', t => {
 
 test('update person', t => {
   const store = createStoreProxy()
-  store.dispatch(Person.Actions.add({ firstname: 'Brice', surname: 'Colucci' }))
-  store.dispatch(Person.Actions.add({ firstname: 'Caroline', surname: 'Lorent' }))
+  store.dispatch(add({ firstname: 'Brice', surname: 'Colucci' }))
+  store.dispatch(add({ firstname: 'Caroline', surname: 'Lorent' }))
   t.deepEqual(store.getState(), [
     { id: 'fake-uuid1', firstname: 'Brice', surname: 'Colucci' },
     { id: 'fake-uuid2', firstname: 'Caroline', surname: 'Lorent' }
   ])
-  store.dispatch(Person.Actions.update({ id: 'fake-uuid1', firstname: 'Maximilien', surname: 'Colucci' }))
+  store.dispatch(update({ id: 'fake-uuid1', firstname: 'Maximilien', surname: 'Colucci' }))
   t.deepEqual(store.getState(), [
     { id: 'fake-uuid1', firstname: 'Maximilien', surname: 'Colucci' },
     { id: 'fake-uuid2', firstname: 'Caroline', surname: 'Lorent' }
